@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- debug="true"：获取 logback 的内部状态信息。-->
+<!-- scan="true"：配置文件改变的时候自动去扫描（默认情况下，一分钟扫描一次配置文件）；scanPeriod：指定扫描周期。-->
+<!-- packagingData="true"：展示包数据，在堆栈的每一行显示 jar 包的名字以及 jar 的版本号（在频繁报错的情况下代价比较高）。-->
+<configuration scan="true" scanPeriod="60 seconds" packagingData="true">
+    <!-- 强制输出 logback 的内部状态信息，等同于上面的 debug="true" -->
+    <!--    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />-->
+
+    <property name="log.path" value="log"/>
+
+    <!--输出到控制台-->
+    <!-- 此日志 appender 是为开发使用，只配置最底级别。 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- ThresholdFilter：基于给定的临界值来过滤事件。如果事件的级别等于或高于给定的临界值，将会返回 NEUTRAL。低于临界值将会被拒绝。-->
+        <!-- <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+        <!--    <level>info</level>-->
+        <!-- </filter>-->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--输出到文件-->
+    <timestamp key="bySecond" datePattern="yyyy_MM_dd"/>
+
+    <!-- DEBUG 日志 -->
+    <appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 正在记录的日志文件的路径及文件名 -->
+        <file>${log.path}/debug_log_${bySecond}.log</file>
+        <!-- immediateFlush：立即刷新（默认值为 true）。
+                            1.设置这个属性为 true 时，立即刷新输出流可以确保日志事件被立即写入，并且可以保证一旦你的应用没有正确关闭 appender，日志事件也不会丢失。
+                            2.设置这个属性为 false 时，有可能会使日志的吞吐量翻两番（视情况而定）。但是，设置为 false，当应用退出的时候没有正确关闭 appender，会导致日志事件没有被写入磁盘，可能会丢失。-->
+        <immediateFlush>false</immediateFlush>
+        <!-- 日志文件输出格式 -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <!-- 设置字符集 -->
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <!-- 日志归档：日志记录器的滚动策略，按日期，按大小记录 -->
+        <!-- SizeAndTimeBasedRollingPolicy：基于时间和日志文件大小定义轮转策略。-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- fileNamePattern：推断轮转周期（下面是按天来轮转的）。-->
+            <fileNamePattern>${log.path}/debug/debug-log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- maxFileSize：控制归档文件每个日志文件的大小，当达到这个大小后，递增索引（%i）从0开始归档。-->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- maxHistory：控制归档文件保留的最大数目，并删除旧的文件。（15天）-->
+            <maxHistory>15</maxHistory>
+            <!-- totalSizeCap：控制所有归档文件总的大小，当达到这个大小后，旧的归档文件将会被异步的删除。（最大大小为10GB）-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- LevelFilter：基于级别来过滤日志事件。如果事件的级别与配置的级别相等，过滤器会根据配置的 onMatch 与 onMismatch 属性，接受或者拒绝事件（此日志文件只记录 debug 级别的）。-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>debug</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!--INFO 日志 -->
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/info_log_${bySecond}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <!-- 日志归档：日志记录器的滚动策略，按日期，按大小记录 -->
+        <!-- TimeBasedRollingPolicy：基于时间和日志文件大小定义轮转策略。-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/info/info-log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- maxFileSize：控制归档文件每个日志文件的大小，当达到这个大小后，递增索引（%i）从0开始归档。-->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- maxHistory：控制归档文件保留的最大数目，并删除旧的文件。（15天）-->
+            <maxHistory>15</maxHistory>
+            <!-- totalSizeCap：控制所有归档文件总的大小，当达到这个大小后，旧的归档文件将会被异步的删除。（最大大小为10GB）-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- LevelFilter：基于级别来过滤日志事件。如果事件的级别与配置的级别相等，过滤器会根据配置的 onMatch 与 onMismatch 属性，接受或者拒绝事件（此日志文件只记录 info 级别的）。-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>info</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- WARN 日志 -->
+    <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/warn_log_${bySecond}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <!-- 日志归档：日志记录器的滚动策略，按日期，按大小记录 -->
+        <!-- TimeBasedRollingPolicy：基于时间和日志文件大小定义轮转策略。-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/warn/warn-log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- maxFileSize：控制归档文件每个日志文件的大小，当达到这个大小后，递增索引（%i）从0开始归档。-->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- maxHistory：控制归档文件保留的最大数目，并删除旧的文件。（15天）-->
+            <maxHistory>15</maxHistory>
+            <!-- totalSizeCap：控制所有归档文件总的大小，当达到这个大小后，旧的归档文件将会被异步的删除。（最大大小为10GB）-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- LevelFilter：基于级别来过滤日志事件。如果事件的级别与配置的级别相等，过滤器会根据配置的 onMatch 与 onMismatch 属性，接受或者拒绝事件（此日志文件只记录 warn 级别的）。-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>warn</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- ERROR 日志 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/error_log_${bySecond}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <!-- 日志归档：日志记录器的滚动策略，按日期，按大小记录 -->
+        <!-- TimeBasedRollingPolicy：基于时间和日志文件大小定义轮转策略。-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/error/error-log.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- maxFileSize：控制归档文件每个日志文件的大小，当达到这个大小后，递增索引（%i）从0开始归档。-->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- maxHistory：控制归档文件保留的最大数目，并删除旧的文件。（15天）-->
+            <maxHistory>15</maxHistory>
+            <!-- totalSizeCap：控制所有归档文件总的大小，当达到这个大小后，旧的归档文件将会被异步的删除。（最大大小为10GB）-->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+        <!-- LevelFilter：基于级别来过滤日志事件。如果事件的级别与配置的级别相等，过滤器会根据配置的 onMatch 与 onMismatch 属性，接受或者拒绝事件（此日志文件只记录 error 级别的）。-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>error</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 异步输出 -->
+    <!-- AsyncAppender：异步的打印 ILoggingEvent。它仅仅是作为一个事件调度器的存在，因此必须调用其它的 appender 来完成操作 -->
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <!-- queueSize：队列的最大容量，默认为 256。-->
+        <queueSize>256</queueSize>
+        <!-- discardingThreshold：默认，当队列还剩余 20% 的容量时，会丢弃级别为 TRACE, DEBUG 与 INFO 的日志，仅仅只保留 WARN 与 ERROR 级别的日志。想要保留所有的事件，可以设置为 0。-->
+        <discardingThreshold>0</discardingThreshold>
+        <!-- includeCallerData：表示是否提取调用者数据，这个值被设置为 true  的代价是相当昂贵的，默认情况下不会获取调用者的信息。-->
+        <!-- <includeCallerData>true</includeCallerData>-->
+        <!-- appender-ref：表示 AsyncAppender 使用哪个具体的 <appender> 进行日志输出，最多只能添加一个。-->
+        <appender-ref ref="INFO_FILE"/>
+    </appender>
+
+    <!--开发环境：打印控制台-->
+    <springProfile name="dev">
+        <!-- com.example.logback 依赖被调用 logger 的有效日志级别是 debug，
+        所以其子类 com.example.logback.LogbackApplicationTests 所依赖的有效 logger 日志级别也是 debug；
+        而不是 appender，name="CONSOLE" 所依附的 logger（也就是 root）的级别 info；
+        总结就是 com.example.logback.LogbackApplicationTests 类的有效 logger 日志级别是 debug。-->
+        <logger name="com.example.logback" level="debug"/>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="DEBUG_FILE"/>
+            <appender-ref ref="INFO_FILE"/>
+            <appender-ref ref="WARN_FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+    </springProfile>
+
+    <!--测试环境：打印控制台-->
+    <springProfile name="test">
+        <!-- 1.将 com.example.logback 包下的 debug 级别的日志单独记录到 log_debug.log 文件中，根据当前 logger 的日志级别来判断是否写入日志文件中：
+                1.1 当前 logger 的日志级别是 debug，会拿到大于等于 debug 的全部日志，同时该包的 appender name="DEBUG_FILE" 只匹配 debug 级别的日志，所以会写入 log_debug.log 文件中；
+                1.2 如果当前 logger 没用设置 level="debug" 该属性，那么会寻找父级的日志级别，而当前包的父级为 root，root 的日志级别为 info，所以只能拿到大于等于 info 的全部日志，
+                    但是该包的 appender name="DEBUG_FILE" 只匹配 debug 级别的日志，所以没用任何的日志会写入 log_debug.log 文件中。
+             2.additivity 属性：为叠加输出（默认为 true）：
+                2.1 当 additivity="true" 时，因为当前 logger 的日志级别是 debug，所以该包下的日志会全部向父级传递，并会全部打印在控制台；
+                2.2 当 additivity="false" 时，该包下的全部日志不会向父级传递，控制台不会打印任何日志。-->
+        <logger name="com.example.logback" level="debug" additivity="false">
+            <appender-ref ref="DEBUG_FILE"/>
+        </logger>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!--生产环境:输出到文件-->
+    <springProfile name="prod">
+        <logger name="com.example.logback" level="debug"/>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="DEBUG_FILE"/>
+            <appender-ref ref="INFO_FILE"/>
+            <appender-ref ref="WARN_FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+    </springProfile>
+</configuration>

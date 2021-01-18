@@ -1,0 +1,5 @@
+2021-01-18 15:27:01.343 [main] ERROR com.example.logback.LogbackApplicationTests - logback error..
+2021-01-18 16:39:40.782 [main] ERROR com.example.logback.LogbackApplicationTests - logback error..
+2021-01-18 16:41:05.417 [main] ERROR com.example.logback.LogbackApplicationTests - logback error..
+2021-01-18 16:44:55.713 [main] ERROR com.example.logback.LogbackApplicationTests - logback error..
+2021-01-18 16:45:01.639 [main] ERROR com.example.logback.LogbackApplicationTests - logback error..
